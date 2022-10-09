@@ -1,13 +1,20 @@
 #include <stdio.h>
 
+#define meret 32765
+
+
 int main(void)
 {
-    int szalag[32768] = {0};
+    char szalag[meret] = {0};
     int szalagPointer = 0;
 
-    char programkod[30];
-    int i = 0;
-    scanf("%s", programkod);
+    char programkod[]="[ThisprogramprintsSierpinskitriangleon80-columndisplay.]>++++[<++++++++>-]>++++++++[>++++<-]>>++>>>+>>>+<<<<<<<<<<[-[->+<]>[-<+>>>.<<]>>>[[->++++++++[>++++<-]>.<<[->+<]+>[->++++++++++<<+>]>.[-]>]]+<<<[-[->+<]+>[-<+>>>-[->+<]++>[-<->]<<<]<<<<]++++++++++.+++.[-]<]+++++*****Made*By:*NYYRIKKI*2002*****";
+    //char programkod[] = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
+    int i = 0; //léptető
+
+    int depth = 0;
+
+    //scanf("%s", programkod);
 
     while (programkod[i] != 0)
     {
@@ -26,24 +33,60 @@ int main(void)
             szalag[szalagPointer]--;
             break;
         case '.':
-            printf("Mutatott bájt kiírása \n");
+            printf("%c", szalag[szalagPointer]);
             break;
         case ',' :
-            printf("Bemenet beolvasása");
+            scanf("%c", &szalag[szalagPointer]);
             break;
         case '[':
-            printf("Elöltesztelő ciklus kezdete");
+            if(szalag[szalagPointer] == 0)
+            {
+                depth++;
+                
+                while (programkod[i] != ']' || depth != 0)
+                {
+                    i++;
+
+                    if (programkod[i] == '[')
+                    {
+                        depth++;
+                    }
+                    else if (programkod[i] == ']')
+                    {
+                        depth--;
+                    }
+                }
+            }
             break;
+            
         case ']':
-            printf("Ciklus vége");
+        
+            if(szalag[szalagPointer] != 0)
+            {
+                depth++;
+                while (programkod[i] != '[' || depth != 0) //akar csinaljuk meg megint amig el nem erunk a legelso '['-hez, mert lehet hogy tobb van
+                {
+                    i--;
+
+                    if(programkod[i] == ']')
+                    {
+                        depth++;
+                    }
+                    else if(programkod[i] == '[')
+                    {
+                        depth--;
+                    }
+                }
+            }
             break;
+
         default:
             break;
         }
-
-        szalagPointer++;
+        i++;
     }
     
+
 
 
 }
