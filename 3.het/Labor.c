@@ -5,7 +5,7 @@
 
 int tombokfrissito(void){
 
-    struct negativok{
+    typedef struct negativok{
         double szam;
         int index;
     } negativok;
@@ -13,7 +13,7 @@ int tombokfrissito(void){
     double szamok[10] = { 2.5, -69, 5.4, -8, -7.7, 6, 2.9, -10, -3, 9.8 };
     struct negativok negativSzamok[10] = {0,0}; 
 
-    int countOfNegatív = 0;
+    int count = 0;
 
     printf("Összesen 10 szám va\n");
 
@@ -22,15 +22,15 @@ int tombokfrissito(void){
         printf("[%d]=%g ", i, szamok[i]);
         if(szamok[i] < 0)
         {
-            negativSzamok[countOfNegatív].szam = szamok[i];
-            negativSzamok[countOfNegatív].index = i;
-            countOfNegatív++;
+            negativSzamok[count].szam = szamok[i];
+            negativSzamok[count].index = i;
+            count++;
         }
     }
 
-    printf("\nEbből %d negatív \n", countOfNegatív);
+    printf("\nEbből %d negatív \n", count);
 
-    for (int i = 0; i < countOfNegatív; i++)
+    for (int i = 0; i < count; i++)
     {
         printf("[%d]=%g ", negativSzamok[i].index, negativSzamok[i].szam);
     }
@@ -205,14 +205,14 @@ int csere(char c){
     return 0;
 }
 
-int kiíro(void)
+int kiiro(void)
 {
-    char szó[30];
-    scanf("%s", szó);
+    char szo[30];
+    scanf("%s", szo);
 
-    for (int i = 0; szó[i] != 0; i++) // a string vége mindig egy 0-ás
+    for (int i = 0; szo[i] != 0; i++) // a string vége mindig egy 0-ás
     {
-        csere(szó[i]);
+        csere (szo[i]);
     }
     
     printf("\n");
@@ -223,7 +223,7 @@ int kiíro(void)
 
 int main(void){
    
-    kiíro();
+    kiiro();
 
     return 0;
 }
