@@ -76,7 +76,7 @@ int visszavaltas(){
 
     while (szam != 0)
     {
-        jegyek[i] = szam % szamrendszer + '0';
+        jegyek[i] = szam % szamrendszer + '0'; //azert kell hogy az ascii codeja jo  legyen
         szam = szam / szamrendszer;
         i++;
     }

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 
 int elso(void){
@@ -50,16 +51,12 @@ int harmadik(double *oldal, double *terfogat, double *felulet){
 
 int otos(void){
 
-    char szo;
     char nev[50];
     int i = 0;
 
-    while(scanf("%c", &szo) == 1 && !isspace(szo)){
-        nev[i] = szo;
-        i++;
-    }
+    scanf("%s", nev);
 
-    nev[i] = '\0'; // itt belerakom a lezarokaraktert, mert ezzel tudom hogy vege van
+    // itt belerakom a lezarokaraktert, mert ezzel tudom hogy vege van
 
     i = 0;
 
@@ -124,11 +121,13 @@ int main(void){
     //harmadik(&oldal, &terfogat, &felulet);
 
 
-    int tomb[] = {0,1,2,3,4,5,6,7,8,9};
+    // int tomb[] = {0,1,2,3,4,5,6,7,8,9};
 
-    printf("%d \n", keres(tomb, 10,3)); // eleg a tomb nem kell a nulladik elem, mert a tomb egy pointer ami a nulladik elemre mutat
+    // printf("%d \n", keres(tomb, 10,3)); // eleg a tomb nem kell a nulladik elem, mert a tomb egy pointer ami a nulladik elemre mutat
 
-    trimmer("Szia Uram! Hogy s mint?");
+    // trimmer("Szia Uram! Hogy s mint?");
+
+    otos();
 
     return 0;
 }
