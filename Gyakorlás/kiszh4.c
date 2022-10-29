@@ -1,29 +1,36 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
 
-int negyesindex(int *tomb, int meret)
-{
-    printf("Pointer : %d \n", *tomb);
+typedef struct Kor {
+    double x;
+    double y;
+    double r;
+} Kor;
 
-    for (int i = 0; i < 10; i++)
-    {
-        printf("%d \n", *tomb);
-        tomb++;
-    }
+bool atfed(Kor k1, Kor k2){
 
-    tomb--;
-    
-    printf("Pointer : %d \n", *tomb);
-
-    return 0;
+    return sqrt(pow(k1.x - k2.x,2) + pow(k1.y - k2.y,2)) < k1.r + k2.r;
 
 }
 
-int main(void)
-{
+Kor beolvas(void){
 
-    int tomb[10] = {0,1,2,3,4,5,6,7,8,10}; //a tomb nev mar magaban egy pointer a nulladik elemre mutat
+    Kor k;
 
-    negyesindex(tomb, 10);
+    scanf("%lf", &k.x);
+    scanf("%lf", &k.y);
+    scanf("%lf", &k.r);
+
+    return k;
+}
+
+int main(void){
+
+    Kor k1 = beolvas();
+    Kor k2 = beolvas();
+
+    printf(atfed(k1,k2) ? "True" : "False");
 
     return 0;
 }
