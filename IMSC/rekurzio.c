@@ -1,21 +1,32 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-//mi kene? 
-//rekurzivan megcsinalni azt, hogy mindig beolvasok egy karaktert, ameddig nem erem az end of file karaktert vagy egy enter
-//es returnnolni a legvegen hogy hany karatkert olvastam be
+void save (int index, char** out_valueptr){
 
-int karakterek(char *c, int index)
-{
-    int count = 0;
+    int c = getchar();
 
-    
+    if (c == '\n' || c == EOF)
+    {
+       (*out_valueptr) = (char*) malloc((index + 1) * sizeof(char)); 
+       (*out_valueptr)[index] = '\0';
+    }
+    else
+    {
+        save(index + 1, out_valueptr);
+        (*out_valueptr)[index] = (char)c;
+    }
+
 }
 
-int main(void) {
+int main(void){
 
-    char bemenet[] = "fasz";
+    char* value;
 
+    save(0, &value);
+    
+    printf("%s\n", value);
 
+    free(value);
 
     return 0;
 }
