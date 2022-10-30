@@ -8,12 +8,6 @@ int karakterek(char *c, int index)
 {
     int count = 0;
 
-    if (c[index] == '\n'  || c[index] == EOF)
-    {
-        return 1;
-    }
-
-    return karakterek(c, index + 1);
     
 }
 
@@ -21,9 +15,7 @@ int main(void) {
 
     char bemenet[] = "fasz";
 
-    int a = karakterek(bemenet, 0);
 
-    printf("%d", a);
 
     return 0;
 }
