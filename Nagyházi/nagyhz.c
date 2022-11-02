@@ -3,18 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-//--------------------------------------------------------Kiirató függvények---------------------------------------------------------
-
-void menuPrint();
-void headerPrint(char* header);
-
-//--------------------------------------------------------Rendes függvények----------------------------------------------------------
-
-void kiadas(time_t t);
-void bevetel();
-void kiadasList();
-void kiadasEdit();
-void statistics();
+#include <stdbool.h>
+#include "nagyhz.h"
 
 //------------------------------------------------------------Program----------------------------------------------------------------
 
@@ -35,7 +25,7 @@ typedef enum Kategoria
 typedef struct Kiadas
 {
     int osszeg;
-    char nev[51];
+    char nev[50];
     Kategoria kategoria;
     struct tm datum;
 
@@ -45,6 +35,8 @@ int main(void)
 {
     time_t t = time(NULL); //idő
     int input; //a menu inputja
+
+    szamlaWriter(szamla);
 
     kiadas(t);
 
@@ -86,25 +78,21 @@ void kiadas(time_t t)
 
     headerPrint("KIADAS BEVITELE");
 
-    //mivan ha tobb kiadast szeretnek bevinni, ahhoz dinamikus listát kell használjak
-    Kiadas* tetelek = (Kiadas*) malloc(1*sizeof(Kiadas)); //több tétel beviteléhez kell
+    Kiadas* kiadasok = (Kiadas*) malloc(1*sizeof(Kiadas)); //több tétel beviteléhez kell -- 1-nél valamiért rossz
 
-    char moreAdd;
-    int index = 0;
+    char input;
+    bool canContinue = true;
 
-    do
-    {   
-    
-        Kiadas kiadas = {.datum = *localtime(&t)}; //struct létrehozása
+    int kiadasokCount = 0;
+    int kiadasokHossz = 1;
 
-        if(index >= 1)
-        {
-            tetelek = (Kiadas*) realloc(tetelek, index+1);
-        }
+    while (canContinue)
+    {
+        Kiadas kiadas = {.datum = *localtime(&t)};
+        kiadas.datum.tm_year += 1900;
 
         printf("Add meg a tetel nevet!\n");
         scanf("%s", &kiadas.nev);
-
         printf("\033[A\33[2K\033[A\33[2K");
 
         printf("Add meg a tetel arat!\n");
@@ -122,13 +110,30 @@ void kiadas(time_t t)
 
         printf("\033[A\33[2K\033[A\33[2K");
 
-        printf("Sikeres bevitel! A tetel:%s %d %s %02d %02d\n", kiadas.nev, kiadas.osszeg, tags[kiadas.kategoria], kiadas.datum.tm_year + 1900, kiadas.datum.tm_mon + 1);
+        if(kiadasokCount >= kiadasokHossz)
+        {   
+            kiadasokHossz *= 2;    
+            kiadasok = (Kiadas*) realloc(kiadasok, sizeof(Kiadas)*(kiadasokHossz));
+            for (int i = 0; i < kiadasokCount; i++)
+            {
+                printf("Sikeres bevitel! A tetel: %s %d %s %02d %02d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].datum.tm_year, kiadasok[i].datum.tm_mon + 1);
+            }
+        }
+
+        kiadasok[kiadasokCount] = kiadas;
         
         printf("Szeretned folytatni? (I) Igen (N) Nem : ");
-        index++;
-    }
-    while (scanf(" %c", &moreAdd) == 1 && moreAdd != 'N');
 
+        kiadasokCount++;
+        canContinue = scanf(" %c\n", &input) == 1 && tolower(input) == 'i';
+        
+    }
+       
+
+    for (int i = 0; i < kiadasokCount; i++)
+    {
+        printf("Sikeres bevitel! A tetel:%s %d %s %02d %02d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].datum.tm_year, kiadasok[i].datum.tm_mon + 1);
+    }
     
 }
 
@@ -182,4 +187,14 @@ void headerPrint(char* header)
     // {
     //     printf("\033[A\33[2K");
     // }
+}
+
+
+void szamlaWriter(int osszeg){
+    FILE* fp;
+
+    fp = fopen("szamla.txt","w");
+
+    fprintf(fp,"%d", osszeg);
+    fclose(fp);
 }
