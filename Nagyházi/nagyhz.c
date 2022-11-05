@@ -12,7 +12,7 @@
 
 //------------------------------------------------------------Program----------------------------------------------------------------
 
-int szamla;
+int szamla = 0;
 char* tags[] = {"vendeglatas","szepsegapolas","ruhazat", "szorakozas", "bevasarlas", "egyeb" };
 
 typedef enum Kategoria
@@ -38,22 +38,25 @@ typedef struct Kiadas
 int main(void)
 {
     time_t t = time(NULL);  //idő megadasa a fuggvenyeknek, mindig kell az aktualis futashoz
-    int input; //a menu inputja
-
-    //az legelso futasnal szeretnenk a kezdo egyenleget feltolteni a szamlara, de ezt csak a legelso lefuttatasnal, utana mindig csak checkolni, hogy mennyi az egyenleg
+    int input; 
     
+    //Szeretnénk megnézni, hogy valaha futott-e már a program, ha igen, akkor a számlán lévő összeg változott, ezt be szeretnénk olvasni az eltárolt "számla.txt" fileból
+
     if (fileExits("szamla.txt"))
     {
-        //ha letezik akkor beolvassuk az aktualis erteket
+        FILE* fp = fopen("szamla.txt","r"); 
+        int _szamla;
+        fscanf(fp, "%d", &_szamla);
+        fclose(fp);
+        szamla = _szamla;
     }
     else
-    {
-        //ha nem akkor megadjuk neki a kezdoerteket es eltaroljuk
+    {   
         szamlaWriter(firstSzamla);
+        szamla = firstSzamla;
     }
-    
-    printf("%d", szamla);
 
+    bevetel();
     kiadas(t);
 
     // menuPrint();
@@ -88,7 +91,12 @@ int main(void)
     return 0;
 }
 
+//----------------------------------------------------------Függvények-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
 
+
+/// @brief Ez a függvény kezeli a kiadásokat, itt tudod megadni, milyen tételt és mennyiért vásároltál, illetve, hogy milyen kategóriába tartozik
+/// @param t Ezt szükséges megadni a függvénynek, hogy tudhassa az aktuális időt, ami szerint válogatja szét külön fileokba a termékeket
 void kiadas(time_t t)
 {
 
@@ -145,39 +153,51 @@ void kiadas(time_t t)
         
     }
        
+    int kiadasSum = 0;
 
     for (int i = 0; i < kiadasokCount; i++)
     {
         printf("Sikeres bevitel! A tetel:%s %d %s %02d %02d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].datum.tm_year, kiadasok[i].datum.tm_mon + 1);
+        kiadasSum += kiadasok[i].osszeg;
     }
-    
+
+    szamla -= kiadasSum; //a szamlabol kivonom az osszeget
+    szamlaWriter(szamla); //eltarolom az uj egyenleget
 }
+
 
 /// @brief Bevétel megadása, ez a függvény fogja hozzáadni a pénzt a számládhoz.
 void bevetel(){
-    int bev;
-    printf("Add meg, hogy mennyi pénzt szeretnél feltölteni a számlára!\n");
+
+    headerPrint("BEVETEL MEGADASA");
+
+    int bev = 0;
+    printf("Add meg, hogy mennyi penzt szeretnel feltolteni a szamlara!\n");
     scanf("%d", &bev);
 
     printf("\033[A\33[2K\033[A\33[2K");
 
     szamla += bev;
     szamlaWriter(szamla);
-    printf("Az új egyenleg: %d \n", szamla);
+    printf("Az uj egyenleg: %d \n", szamla);
 
 }
+
 
 void kiadasList(){
     printf("KiadasList\n");
 }
 
+
 void kiadasEdit(){
     printf("KiadasEdit\n");
 }
 
+
 void statistics(){
     printf("Statistics\n");
 }
+
 
 void menuPrint(){
     printf("Szamlan levo osszeg: %d HUF \n", szamla);
@@ -190,6 +210,9 @@ void menuPrint(){
     printf("(6) - Kilepes\n");
 }
 
+
+///@brief Ezzel függvénnyel tudjuk az egyes részek headerjét
+///@param header Itt tudod megadni mi legyen a header-be írva
 void headerPrint(char* header)
 {
 
@@ -223,11 +246,12 @@ void szamlaWriter(int osszeg){
     fp = fopen("szamla.txt","w");
 
     fprintf(fp,"%d", osszeg);
+
     fclose(fp);
 }
 
 
-/// @Ez a függvény leellenőrzi, hogy a megnyitni kívánt file létezik-e?
+/// @brief Ez a függvény leellenőrzi, hogy a megnyitni kívánt file létezik-e?
 /// @param filename Paraméterként a megnyitni kívánt file nevét kell megadni
 /// @return Visszadja, hogy létezik-e a file.
 bool fileExits(char *filename)
