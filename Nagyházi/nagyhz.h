@@ -1,4 +1,6 @@
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 //--------------------------------------------------------Kiirató függvények---------------------------------------------------------
 
@@ -13,3 +15,4 @@ void kiadasList();
 void kiadasEdit();
 void statistics();
 void szamlaWriter(int osszeg);
+bool fileExits(char *filename);
