@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "nagyhz.h"
 
+
 //----------------------------------------------------------Elso inditas-------------------------------------------------------------
 
 #define firstSzamla 200000
@@ -32,8 +33,11 @@ typedef struct Kiadas
     char nev[50];
     Kategoria kategoria;
     struct tm datum;
+    int id;
 
 } Kiadas;
+
+void kiadasWriter(char* fileName, Kiadas* kiadasok, int length);
 
 int main(void)
 {   
@@ -116,6 +120,7 @@ void kiadas(time_t t)
         Kiadas kiadas = {.datum = *localtime(&t)};
         kiadas.datum.tm_year += 1900;
         kiadas.datum.tm_mon += 1;
+        kiadas.id = kiadas.datum.tm_sec + kiadas.datum.tm_min*60 + kiadas.datum.tm_hour*60*60 + kiadas.datum.tm_mday*24*60*60 + kiadasokCount;
 
         printf("Add meg a tetel nevet!\n");
         scanf("%s", kiadas.nev);
@@ -308,7 +313,14 @@ void kiadasWriter(char* fileName, Kiadas* kiadasok, int length)
 
     if (fileExits(fileName)) //ha létezik akkor csak appendelek a végére
     {
+        FILE* fp = fopen(fileName, "a");
+
+        for (int i = 0; i < length; i++)
+        {
+            fprintf(fp,"%s_%d_%s_%d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].id);
+        }
         
+        fclose(fp);
     }
     else //ha nem akkor pedig letrehozom
     {
@@ -316,8 +328,7 @@ void kiadasWriter(char* fileName, Kiadas* kiadasok, int length)
 
         for (int i = 0; i < length; i++)
         {
-            int id = kiadasok[i].datum.tm_sec + kiadasok[i].datum.tm_min*60 + kiadasok[i].datum.tm_hour*60*60 + kiadasok[i].datum.tm_mday*24*60*60;
-            fprintf(fp,"%s_%d_%s_%d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], id );
+            fprintf(fp,"%s_%d_%s_%d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].id );
         }
         
         fclose(fp);

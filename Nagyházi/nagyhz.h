@@ -9,6 +9,8 @@ void headerPrint(char* header);
 
 //--------------------------------------------------------Rendes függvények----------------------------------------------------------
 
+
+    
 void kiadas(time_t t);
 void bevetel();
 void kiadasList();
@@ -16,4 +18,4 @@ void kiadasEdit();
 void statistics();
 void szamlaWriter(int osszeg);
 bool fileExits(char *filename);
-void kiadasWriter(char* fileName, Kiadas* kiadasok, int length);
+
