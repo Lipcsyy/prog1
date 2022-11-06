@@ -1,1 +1,1 @@
-  
+void kiadasWriter(char* fileName, Kiadas* kiadasok, int length)

@@ -36,7 +36,8 @@ typedef struct Kiadas
 } Kiadas;
 
 int main(void)
-{
+{   
+    
     time_t t = time(NULL);  //idő megadasa a fuggvenyeknek, mindig kell az aktualis futashoz
     int input; 
     
@@ -101,7 +102,7 @@ void kiadas(time_t t)
 {
 
     headerPrint("KIADAS BEVITELE");
-
+    
     Kiadas* kiadasok = (Kiadas*) malloc(1*sizeof(Kiadas)); //több tétel beviteléhez kell -- 1-nél valamiért rossz
 
     char input;
@@ -114,6 +115,7 @@ void kiadas(time_t t)
     {
         Kiadas kiadas = {.datum = *localtime(&t)};
         kiadas.datum.tm_year += 1900;
+        kiadas.datum.tm_mon += 1;
 
         printf("Add meg a tetel nevet!\n");
         scanf("%s", kiadas.nev);
@@ -138,31 +140,58 @@ void kiadas(time_t t)
         {   
             kiadasokHossz *= 2;    
             kiadasok = (Kiadas*) realloc(kiadasok, sizeof(Kiadas)*(kiadasokHossz));
-            for (int i = 0; i < kiadasokCount; i++)
-            {
-                printf("Sikeres bevitel! A tetel: %s %d %s %02d %02d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].datum.tm_year, kiadasok[i].datum.tm_mon + 1);
-            }
         }
 
         kiadasok[kiadasokCount] = kiadas;
+        kiadasokCount++;
         
         printf("Szeretned folytatni? (I) Igen (N) Nem : ");
-
-        kiadasokCount++;
         canContinue = scanf(" %c", &input) == 1 && (input == 'i' || input == 'I');
         
     }
-       
+
+    //összeszámoljuk, mennyit költene összesen most a felhasználó
+
     int kiadasSum = 0;
 
     for (int i = 0; i < kiadasokCount; i++)
-    {
-        printf("Sikeres bevitel! A tetel:%s %d %s %02d %02d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].datum.tm_year, kiadasok[i].datum.tm_mon + 1);
+    { 
         kiadasSum += kiadasok[i].osszeg;
     }
 
-    szamla -= kiadasSum; //a szamlabol kivonom az osszeget
-    szamlaWriter(szamla); //eltarolom az uj egyenleget
+    //ha nincsen eleg penze, akkor hibaüzenettel visszatérünk, ha pedig sikeres, akkor végrehajtjuk a tranzakciot
+
+    if (kiadasSum > szamla)
+    {
+        printf("Sikertelen bevitel nincs %d Ft a szamladon, a hianyzo osszeg : %d Ft \n", kiadasSum, kiadasSum-szamla);
+    }
+    else
+    {   
+
+        for (int i = 0; i < kiadasokCount; i++)
+        { 
+            printf("Sikeres bevitel! A tetel:%s %d %s %02d %02d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], kiadasok[i].datum.tm_year, kiadasok[i].datum.tm_mon);
+        }
+
+        szamla -= kiadasSum; //a szamlabol kivonom az osszeget
+        szamlaWriter(szamla); //eltarolom az uj egyenleget
+
+        //itt alakítom ki a filenak a nevét
+
+        char fYear[4];
+        sprintf(fYear,"%d", kiadasok[0].datum.tm_year);
+        char fMonth[3];
+        sprintf(fMonth,"%d", kiadasok[0].datum.tm_mon);
+
+        char fileName[11];
+        strcpy(fileName, fYear);
+        strcat(fileName,"_");
+        strcat(fileName,fMonth);
+
+        kiadasWriter(fileName, kiadasok, kiadasokCount);
+
+    }
+    
 }
 
 
@@ -216,6 +245,7 @@ void menuPrint(){
 void headerPrint(char* header)
 {
 
+    printf("\n");
 
     for (int i = 0; i < 30; i++)
     {
@@ -265,5 +295,32 @@ bool fileExits(char *filename)
     else
     {
         return true;
+    }
+}
+
+
+/// @brief Ez a függvény írja bele az aktuális hónap file-ba az adatokat
+/// @param fileName A filenév, ami alapján checkoljuk, hogy hova kell írni
+/// @param kiadasok Az adatok, amiket bele szeretnénk írni a fileba
+/// @param length A hossza az kiadasok tombnek
+void kiadasWriter(char* fileName, Kiadas* kiadasok, int length)
+{
+
+    if (fileExits(fileName)) //ha létezik akkor csak appendelek a végére
+    {
+        
+    }
+    else //ha nem akkor pedig letrehozom
+    {
+        FILE* fp = fopen(fileName, "w");
+
+        for (int i = 0; i < length; i++)
+        {
+            int id = kiadasok[i].datum.tm_sec + kiadasok[i].datum.tm_min*60 + kiadasok[i].datum.tm_hour*60*60 + kiadasok[i].datum.tm_mday*24*60*60;
+            fprintf(fp,"%s_%d_%s_%d\n", kiadasok[i].nev, kiadasok[i].osszeg, tags[kiadasok[i].kategoria], id );
+        }
+        
+        fclose(fp);
+
     }
 }
