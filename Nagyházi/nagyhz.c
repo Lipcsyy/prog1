@@ -37,7 +37,17 @@ typedef struct Kiadas
 
 } Kiadas;
 
+typedef struct listaElem{
+    
+    Kiadas* kiadas;
+    struct listaElem* kov;
+
+}  listaElem;
+
+//---------------------------------------------Függvények, amiket máshova kell tegyek majd-------------------------------------
+
 void kiadasWriter(char* fileName, Kiadas* kiadasok, int length);
+listaElem* listaVegFuz(listaElem* eleje, time_t t, Kiadas* kiadas);
 
 int main(void)
 {   
@@ -61,7 +71,6 @@ int main(void)
         szamla = firstSzamla;
     }
 
-    bevetel();
     kiadas(t);
 
     // menuPrint();
@@ -112,6 +121,8 @@ void kiadas(time_t t)
     char input;
     bool canContinue = true;
 
+    listaElem* eleje = NULL; //láncolt lista eleje
+
     int kiadasokCount = 0;
     int kiadasokHossz = 1;
 
@@ -140,6 +151,27 @@ void kiadas(time_t t)
         }   
 
         printf("\033[A\33[2K\033[A\33[2K");
+
+        //--------------------------------------------láncolt listával
+
+
+        eleje = listaVegFuz(eleje, t, &kiadas);
+
+        listaElem* mozgo = eleje;
+
+        printf("ELOTTE FASZ\n");
+
+        printf("NEV INNEN1 %s\n", eleje->kiadas->nev);
+
+        for (;mozgo != NULL; mozgo = mozgo->kov)
+        {
+            printf("%s\n", mozgo->kiadas->nev);
+        }
+       
+        printf("Mozgattuk");
+        
+        
+        //--------------------------------------------malloccal
 
         if(kiadasokCount >= kiadasokHossz)
         {   
@@ -194,7 +226,7 @@ void kiadas(time_t t)
         strcat(fileName,fMonth);
 
         kiadasWriter(fileName, kiadasok, kiadasokCount);
-
+        free(kiadasok);
     }
     
 }
@@ -334,4 +366,38 @@ void kiadasWriter(char* fileName, Kiadas* kiadasok, int length)
         fclose(fp);
 
     }
+}
+
+
+/// @brief Ez a fuggveny a lancolt lista vegere fuzi a kovetkezo elemet
+/// @param eleje 
+listaElem* listaVegFuz(listaElem* eleje, time_t t, Kiadas* kiadas)
+{
+    listaElem* uj;
+
+    uj = (listaElem*) malloc(sizeof(listaElem));
+
+    uj->kiadas = kiadas;
+    uj->kov = NULL;
+    
+
+    if (eleje == NULL)
+    {      
+        eleje = uj;
+        printf("NEV : %s \n", eleje->kiadas->nev);
+    }
+    else
+    {   
+        listaElem* mozgo = eleje;
+        while (mozgo != 0) 
+        {
+            mozgo = mozgo->kov;
+        }
+        mozgo->kov = uj; 
+    }
+
+    free(uj);    
+    printf("FUZ1\n");
+    return eleje;
+    
 }

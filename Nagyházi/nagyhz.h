@@ -8,7 +8,7 @@ void menuPrint();
 void headerPrint(char* header);
 
 //--------------------------------------------------------Rendes függvények----------------------------------------------------------
-
+ 
 
     
 void kiadas(time_t t);
@@ -18,4 +18,5 @@ void kiadasEdit();
 void statistics();
 void szamlaWriter(int osszeg);
 bool fileExits(char *filename);
+
 
