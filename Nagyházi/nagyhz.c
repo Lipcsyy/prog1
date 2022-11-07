@@ -154,24 +154,17 @@ void kiadas(time_t t)
 
         //--------------------------------------------láncolt listával
 
-
         eleje = listaVegFuz(eleje, t, &kiadas);
 
-        listaElem* mozgo = eleje;
+        listaElem* head = eleje;
 
-        printf("ELOTTE FASZ\n");
-
-        printf("NEV INNEN1 %s\n", eleje->kiadas->nev);
-
-        for (;mozgo != NULL; mozgo = mozgo->kov)
+        while (head != NULL)
         {
-            printf("%s\n", mozgo->kiadas->nev);
+            printf("%s\n", head->kiadas->nev);
+            head = head->kov;
         }
-       
-        printf("Mozgattuk");
-        
-        
-        //--------------------------------------------malloccal
+
+        //-----------------------------------------------malloccal
 
         if(kiadasokCount >= kiadasokHossz)
         {   
@@ -246,7 +239,6 @@ void bevetel(){
     szamla += bev;
     szamlaWriter(szamla);
     printf("Az uj egyenleg: %d \n", szamla);
-
 }
 
 
@@ -380,24 +372,21 @@ listaElem* listaVegFuz(listaElem* eleje, time_t t, Kiadas* kiadas)
     uj->kiadas = kiadas;
     uj->kov = NULL;
     
-
     if (eleje == NULL)
     {      
         eleje = uj;
-        printf("NEV : %s \n", eleje->kiadas->nev);
     }
     else
     {   
         listaElem* mozgo = eleje;
-        while (mozgo != 0) 
+
+        while (mozgo->kov != NULL) 
         {
             mozgo = mozgo->kov;
         }
         mozgo->kov = uj; 
-    }
+    }  
 
-    free(uj);    
-    printf("FUZ1\n");
     return eleje;
     
 }
