@@ -47,7 +47,7 @@ typedef struct listaElem{
 //---------------------------------------------Függvények, amiket máshova kell tegyek majd-------------------------------------
 
 void kiadasWriter(char* fileName, Kiadas* kiadasok, int length);
-listaElem* listaVegFuz(listaElem* eleje, time_t t, Kiadas* kiadas);
+void listaVegFuz(listaElem** eleje, time_t t, Kiadas* kiadas);
 
 int main(void)
 {   
@@ -116,7 +116,7 @@ void kiadas(time_t t)
 
     headerPrint("KIADAS BEVITELE");
     
-    Kiadas* kiadasok = (Kiadas*) malloc(1*sizeof(Kiadas)); //több tétel beviteléhez kell -- 1-nél valamiért rossz
+    Kiadas* kiadasok = (Kiadas*) malloc(1*sizeof(Kiadas)); //több tétel beviteléhez kell -- 1-nél valamiért rosal asz
 
     char input;
     bool canContinue = true;
@@ -154,13 +154,17 @@ void kiadas(time_t t)
 
         //--------------------------------------------láncolt listával
 
-        eleje = listaVegFuz(eleje, t, &kiadas);
+        if (eleje != NULL) printf("ELEJE %p \n",eleje);
+
+        listaVegFuz(&eleje, t, &kiadas);
 
         listaElem* head = eleje;
 
+        printf("HEAD: %p\n", head);
+
         while (head != NULL)
         {
-            printf("%s\n", head->kiadas->nev);
+            printf("Láncolt listával: %s, %p\n", head->kiadas->nev, head->kov);
             head = head->kov;
         }
 
@@ -363,8 +367,9 @@ void kiadasWriter(char* fileName, Kiadas* kiadasok, int length)
 
 /// @brief Ez a fuggveny a lancolt lista vegere fuzi a kovetkezo elemet
 /// @param eleje 
-listaElem* listaVegFuz(listaElem* eleje, time_t t, Kiadas* kiadas)
+void listaVegFuz(listaElem** eleje, time_t t, Kiadas* kiadas)
 {
+    
     listaElem* uj;
 
     uj = (listaElem*) malloc(sizeof(listaElem));
@@ -372,21 +377,25 @@ listaElem* listaVegFuz(listaElem* eleje, time_t t, Kiadas* kiadas)
     uj->kiadas = kiadas;
     uj->kov = NULL;
     
-    if (eleje == NULL)
-    {      
-        eleje = uj;
+
+    if (*eleje == NULL)
+    {    
+        *eleje = uj;
+        printf("Eleje fuggvenybol: %s\n", (*eleje)->kiadas->nev);
     }
     else
     {   
-        listaElem* mozgo = eleje;
+
+        listaElem* mozgo = *eleje;
 
         while (mozgo->kov != NULL) 
-        {
+        {   
             mozgo = mozgo->kov;
+            printf("MOZGO %p\n", mozgo);
         }
         mozgo->kov = uj; 
     }  
 
-    return eleje;
+    printf("Eleje fuggvenybol a vegen : %s \n", (*eleje)->kiadas->nev);
     
 }
