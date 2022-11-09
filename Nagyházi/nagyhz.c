@@ -128,23 +128,25 @@ void kiadas(time_t t)
 
     while (canContinue)
     {
-        Kiadas kiadas = {.datum = *localtime(&t)};
-        kiadas.datum.tm_year += 1900;
-        kiadas.datum.tm_mon += 1;
-        kiadas.id = kiadas.datum.tm_sec + kiadas.datum.tm_min*60 + kiadas.datum.tm_hour*60*60 + kiadas.datum.tm_mday*24*60*60 + kiadasokCount;
+        Kiadas* kiadasPt = (Kiadas*) malloc(sizeof(Kiadas));
+        kiadasPt->datum = *localtime(&t);
+
+        kiadasPt->datum.tm_year += 1900;
+        kiadasPt->datum.tm_mon += 1;
+        kiadasPt->id = kiadasPt->datum.tm_sec + kiadasPt->datum.tm_min*60 + kiadasPt->datum.tm_hour*60*60 + kiadasPt->datum.tm_mday*24*60*60 + kiadasokCount;
 
         printf("Add meg a tetel nevet!\n");
-        scanf("%s", kiadas.nev);
+        scanf("%s", kiadasPt->nev);
         printf("\033[A\33[2K\033[A\33[2K");
 
         printf("Add meg a tetel arat!\n");
-        scanf("%d", &kiadas.osszeg);
+        scanf("%d",&(kiadasPt->osszeg));
 
         printf("\033[A\33[2K\033[A\33[2K");
 
         printf("Add meg a kategoriajat!\n");
 
-        while (scanf("%d", &kiadas.kategoria) == 1 && (kiadas.kategoria > 6 || kiadas.kategoria < 0 ))
+        while (scanf("%d", &(kiadasPt->kategoria)) == 1 && (kiadasPt->kategoria > 6 || kiadasPt->kategoria < 0 ))
         {
             printf("Add meg a kategoriajat!\n");
             printf("\033[A\33[2K\033[A\33[2K");
@@ -156,7 +158,7 @@ void kiadas(time_t t)
 
         if (eleje != NULL) printf("ELEJE %p \n",eleje);
 
-        listaVegFuz(&eleje, t, &kiadas);
+        listaVegFuz(&eleje, t, kiadasPt);
 
         listaElem* head = eleje;
 
@@ -164,20 +166,20 @@ void kiadas(time_t t)
 
         while (head != NULL)
         {
-            printf("Láncolt listával: %s, %p\n", head->kiadas->nev, head->kov);
+            printf("Láncolt listával: %p %s, %p\n", head ,head->kiadas->nev, head->kov);
             head = head->kov;
         }
 
         //-----------------------------------------------malloccal
 
-        if(kiadasokCount >= kiadasokHossz)
-        {   
-            kiadasokHossz *= 2;    
-            kiadasok = (Kiadas*) realloc(kiadasok, sizeof(Kiadas)*(kiadasokHossz));
-        }
+        // if(kiadasokCount >= kiadasokHossz)
+        // {   
+        //     kiadasokHossz *= 2;    
+        //     //kiadasok = (Kiadas*) realloc(kiadasok, sizeof(Kiadas)*(kiadasokHossz));
+        // }
 
-        kiadasok[kiadasokCount] = kiadas;
-        kiadasokCount++;
+        //kiadasok[kiadasokCount] = kiadas;
+        //kiadasokCount++;
         
         printf("Szeretned folytatni? (I) Igen (N) Nem : ");
         canContinue = scanf(" %c", &input) == 1 && (input == 'i' || input == 'I');
@@ -226,6 +228,8 @@ void kiadas(time_t t)
         free(kiadasok);
     }
     
+
+
 }
 
 
