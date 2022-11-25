@@ -156,13 +156,10 @@ void kiadas(time_t t)
 
         //--------------------------------------------láncolt listával
 
-        if (eleje != NULL) printf("ELEJE %p \n",eleje);
 
         listaVegFuz(&eleje, t, kiadasPt);
 
         listaElem* head = eleje;
-
-        printf("HEAD: %p\n", head);
 
         while (head != NULL)
         {
@@ -385,7 +382,6 @@ void listaVegFuz(listaElem** eleje, time_t t, Kiadas* kiadas)
     if (*eleje == NULL)
     {    
         *eleje = uj;
-        printf("Eleje fuggvenybol: %s\n", (*eleje)->kiadas->nev);
     }
     else
     {   
@@ -395,11 +391,8 @@ void listaVegFuz(listaElem** eleje, time_t t, Kiadas* kiadas)
         while (mozgo->kov != NULL) 
         {   
             mozgo = mozgo->kov;
-            printf("MOZGO %p\n", mozgo);
         }
         mozgo->kov = uj; 
     }  
-
-    printf("Eleje fuggvenybol a vegen : %s \n", (*eleje)->kiadas->nev);
     
 }
